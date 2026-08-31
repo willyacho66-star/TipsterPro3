@@ -1,0 +1,303 @@
+
+1	<!DOCTYPE html> 
+2	<html lang="es"> 
+3	<head> 
+4	<meta charset="utf-8"/> 
+5	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/> 
+6	<title>Tipster Pro 3</title> 
+7	<style> 
+8	:root{--bg:#071018;--card:#111c26;--card2:#162431;--text:#eef5fb;--muted:#8da2b5;--green:#25d366;--yellow:#f4c542;--red:#ff6868;--blue:#4ea1ff;--line:#223544} 
+9	*{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#071018,#0a141e 40%,#071018);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif} 
+10	header{position:sticky;top:0;z-index:10;background:rgba(7,16,24,.96);backdrop-filter:blur(12px);padding:14px 14px 10px;border-bottom:1px solid var(--line)} 
+11	.brand{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand h1{font-size:20px;margin:0}.brand small{color:var(--muted)} 
+12	.controls{display:flex;gap:8px;margin-top:10px}.btn{border:0;border-radius:12px;padding:10px 12px;background:var(--card2);color:var(--text);font-weight:700}.btn.primary{background:var(--green);color:#071018}.btn:active{transform:scale(.98)} 
+13	.tabs{display:flex;gap:8px;padding:12px 14px 0}.tab{flex:1;text-align:center;padding:10px;border-radius:12px;background:var(--card);color:var(--muted);font-weight:700}.tab.active{background:#17392c;color:#8ff4b8;border:1px solid #2b7853} 
+14	.info{margin:12px 14px;padding:12px;border-radius:14px;background:#0e1a24;border:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.45} 
+15	.list{padding:0 12px 90px}.league{margin:14px 0 8px;color:#b9c8d5;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.5px} 
+16	.match{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:11px;box-shadow:0 7px 22px rgba(0,0,0,.16)} 
+17	.top{display:flex;justify-content:space-between;gap:12px}.teams{min-width:0}.teams b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.teams span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.time{font-size:12px;color:#d8e7f3;background:#1b2a36;padding:6px 8px;border-radius:10px;height:max-content} 
+18	.picks{display:grid;grid-template-columns:1fr;gap:7px;margin-top:11px}.pick{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#0b151e;border:1px solid #1d3040;border-radius:12px;padding:9px 10px} 
+19	.pick .rank{font-size:12px;font-weight:900;width:70px}.pick .sel{flex:1;font-weight:800;font-size:14px}.score{font-size:11px;padding:4px 7px;border-radius:999px;background:#1b2a36;color:#b9c8d5} 
+20	.r1 .rank{color:var(--green)}.r2 .rank{color:var(--yellow)}.r3 .rank{color:var(--blue)} 
+21	.detailBtn{width:100%;margin-top:10px;background:transparent;border:1px solid #2a4052;color:#bcd0df;padding:9px;border-radius:11px;font-weight:700} 
+22	.empty{text-align:center;color:var(--muted);padding:50px 20px} 
+23	.settings{position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:50;display:none;align-items:flex-end}.panel{background:#101b25;width:100%;max-height:88vh;border-radius:22px 22px 0 0;padding:18px;overflow:auto;border-top:1px solid #2b3d4c}.panel h2{margin:0 0 8px}.panel p{color:var(--muted);font-size:13px;line-height:1.45} 
+24	input{width:100%;padding:13px;border-radius:12px;border:1px solid #2b4052;background:#09131c;color:white;margin:8px 0 10px} 
+25	.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:60;display:none;align-items:flex-end}.sheet{background:#101b25;width:100%;max-height:92vh;border-radius:22px 22px 0 0;padding:18px;overflow:auto}.sheet h2{margin:0}.section{background:#0b151e;border:1px solid #203545;border-radius:14px;padding:12px;margin-top:10px}.section h3{margin:0 0 7px;font-size:14px}.section p{margin:0;color:#c8d5df;font-size:13px;line-height:1.55}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:#182a37;color:#cbdce8;border-radius:999px;padding:6px 8px;font-size:11px} 
+26	.close{float:right;background:#20303d;border:0;color:white;border-radius:10px;padding:8px 10px} 
+27	.loading{animation:pulse 1.2s infinite}@keyframes pulse{50%{opacity:.45}} 
+28	.footer{position:fixed;bottom:0;left:0;right:0;background:rgba(7,16,24,.96);border-top:1px solid var(--line);padding:8px 12px;color:var(--muted);font-size:11px;text-align:center} 
+29	a{color:#77b9ff} 
+30	</style> 
+31	</head> 
+32	<body> 
+33	<header> 
+34	  <div class="brand"> 
+35	    <div><h1>⚽ Tipster Pro 3</h1><small>3 pronósticos automáticos • sin hándicap • sin combinadas</small></div> 
+36	    <button class="btn" onclick="openSettings()">⚙️</button> 
+37	  </div> 
+38	  <div class="controls"> 
+39	    <button class="btn primary" onclick="refreshAll(true)">Actualizar</button> 
+40	    <button class="btn" onclick="clearPredictionCache()">Reanalizar</button> 
+41	  </div> 
+42	</header> 
+43	 
+44	<div class="tabs"> 
+45	  <div id="tabToday" class="tab active" onclick="setDay(0)">HOY</div> 
+46	  <div id="tabTomorrow" class="tab" onclick="setDay(1)">MAÑANA</div> 
+47	</div> 
+48	<div class="info" id="status">Configura tu API key para cargar partidos y análisis.</div> 
+49	<div id="matches" class="list"></div> 
+50	<div class="footer">Los pronósticos son estimaciones estadísticas. No existe resultado garantizado.</div> 
+51	 
+52	<div id="settings" class="settings" onclick="if(event.target.id==='settings')closeSettings()"> 
+53	  <div class="panel"> 
+54	    <button class="close" onclick="closeSettings()">✕</button> 
+55	    <h2>Configuración</h2> 
+56	    <p>La app usa API-Football para partidos, forma, H2H y predicciones. La API key queda guardada solo en este dispositivo.</p> 
+57	    <input id="apiKey" type="password" placeholder="Pega tu x-apisports-key"/> 
+58	    <button class="btn primary" style="width:100%" onclick="saveSettings()">Guardar y analizar</button> 
+59	    <div class="section"> 
+60	      <h3>Competiciones filtradas</h3> 
+61	      <p>Champions, Europa, Conference, Libertadores, Sudamericana, Mundial/Eliminatorias, Euro, Mundial de Clubes, Nations League, España 1ª/2ª/Copa, Bundesliga, Brasil A/B, Argentina, Arabia Saudita, MLS, Bélgica, Bulgaria, Chile, Colombia, Dinamarca, Escocia, Francia, Eredivisie, Perú, Chequia, Rumania, Turquía, Premier/Championship, Italia A/B/Copa y Portugal.</p> 
+62	    </div> 
+63	  </div> 
+64	</div> 
+65	 
+66	<div id="modal" class="modal" onclick="if(event.target.id==='modal')closeModal()"> 
+67	  <div class="sheet"> 
+68	    <button class="close" onclick="closeModal()">✕</button> 
+69	    <div id="detailContent"></div> 
+70	  </div> 
+71	</div> 
+72	 
+73	<script> 
+74	const state={day:0,fixtures:{0:[],1:[]},pred:{},loading:false}; 
+75	const qs=s=>document.querySelector(s); 
+76	const key=()=>localStorage.getItem('api_key')||''; 
+77	const sleep=ms=>new Promise(r=>setTimeout(r,ms)); 
+78	const fmtDate=d=>d.toISOString().slice(0,10); 
+79	function localDate(offset=0){let d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return fmtDate(d)} 
+80	function tz(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'America/Lima'}catch(e){return 'America/Lima'}} 
+81	function safeJSON(s){try{return JSON.parse(s)}catch(e){return {errors:{parse:String(e)},response:[]}}} 
+82	function apiError(data){if(!data)return 'Sin respuesta'; let e=data.errors;if(!e)return ''; if(Array.isArray(e)&&!e.length)return ''; if(typeof e==='object'&&Object.keys(e).length===0)return ''; return typeof e==='string'?e:JSON.stringify(e)} 
+83	function norm(s){return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()} 
+84	 
+85	const leagueRules=[ 
+86	  {country:'world',rx:/uefa champions league|champions league/}, 
+87	  {country:'world',rx:/uefa europa league|europa league/}, 
+88	  {country:'world',rx:/uefa conference league|conference league/}, 
+89	  {country:'world',rx:/copa libertadores|conmebol libertadores/}, 
+90	  {country:'world',rx:/copa sudamericana|conmebol sudamericana/}, 
+91	  {country:'world',rx:/world cup|world championship|qualification.*world cup|world cup.*qualification/}, 
+92	  {country:'world',rx:/euro championship|uefa euro|european championship/}, 
+93	  {country:'world',rx:/club world cup|fifa club world cup/}, 
+94	  {country:'world',rx:/uefa nations league|nations league/}, 
+95	  {country:'spain',rx:/la liga|segunda division|la liga 2|copa del rey/}, 
+96	  {country:'germany',rx:/bundesliga/}, 
+97	  {country:'brazil',rx:/serie a|serie b/}, 
+98	  {country:'argentina',rx:/liga profesional|primera division/}, 
+99	  {country:'saudi arabia',rx:/pro league|professional league/}, 
+100	  {country:'usa',rx:/major league soccer|mls/}, 
+101	  {country:'belgium',rx:/jupiler pro league|first division a|pro league/}, 
+102	  {country:'bulgaria',rx:/first league|parva liga/}, 
+103	  {country:'chile',rx:/primera division/}, 
+104	  {country:'colombia',rx:/primera a/}, 
+105	  {country:'denmark',rx:/superliga/}, 
+106	  {country:'scotland',rx:/premiership/}, 
+107	  {country:'france',rx:/ligue 1/}, 
+108	  {country:'netherlands',rx:/eredivisie/}, 
+109	  {country:'peru',rx:/primera division|liga 1/}, 
+110	  {country:'czech-republic',rx:/czech liga|first league|1 liga/}, 
+111	  {country:'czech republic',rx:/czech liga|first league|1 liga/}, 
+112	  {country:'romania',rx:/liga i|liga 1/}, 
+113	  {country:'turkey',rx:/super lig/}, 
+114	  {country:'england',rx:/premier league|championship/}, 
+115	  {country:'italy',rx:/serie a|serie b|coppa italia/}, 
+116	  {country:'portugal',rx:/primeira liga/} 
+117	]; 
+118	 
+119	function allowed(f){ 
+120	  const c=norm(f.league?.country), n=norm(f.league?.name); 
+121	  return leagueRules.some(r=>{ 
+122	    const rc=norm(r.country); 
+123	    const countryOK = rc==='world' ? (c==='world'||c==='europe'||c==='south america'||c==='international') : c===rc; 
+124	    return countryOK && r.rx.test(n); 
+125	  }); 
+126	} 
+127	 
+128	function callBridge(method,...args){ 
+129	  return new Promise((resolve,reject)=>{ 
+130	    setTimeout(()=>{ 
+131	      try{ 
+132	        if(!window.AndroidApi) throw new Error('AndroidApi no disponible'); 
+133	        const out=window.AndroidApi[method](...args.map(x=>String(x??''))); 
+134	        resolve(safeJSON(out)); 
+135	      }catch(e){reject(e)} 
+136	    },20) 
+137	  }); 
+138	} 
+139	 
+140	async function loadFixtures(day){ 
+141	  const date=localDate(day); 
+142	  const data=await callBridge('fixtures',date,tz(),key()); 
+143	  const err=apiError(data); if(err) throw new Error(err); 
+144	  return (data.response||[]).filter(allowed).sort((a,b)=>new Date(a.fixture.date)-new Date(b.fixture.date)); 
+145	} 
+146	 
+147	function pct(v){const n=parseFloat(String(v||'').replace('%',''));return isFinite(n)?n:0} 
+148	function nval(v,d=0){const n=parseFloat(v);return isFinite(n)?n:d} 
+149	function clamp(x,a,b){return Math.max(a,Math.min(b,x))} 
+150	function pick(label,score,why,cat){return {label,score:Math.round(clamp(score,50,96)),why,cat}} 
+151	function last5Totals(t){ 
+152	  try{ 
+153	    const f=nval(t.last_5.goals.for.total.total,0), a=nval(t.last_5.goals.against.total.total,0); 
+154	    return {for:f,against:a,total:f+a}; 
+155	  }catch(e){return {for:0,against:0,total:0}} 
+156	} 
+157	 
+158	function derivePicks(p){ 
+159	  const pred=p.predictions||{}, pr=pred.percent||{}; 
+160	  const H=pct(pr.home), D=pct(pr.draw), A=pct(pr.away); 
+161	  const goalHome=nval(pred.goals?.home,0), goalAway=nval(pred.goals?.away,0), exp=goalHome+goalAway; 
+162	  const underOver=(pred.under_over||'').toLowerCase(); 
+163	  const candidates=[]; 
+164	  const fav=Math.max(H,A); 
+165	  if(H+D>=65) candidates.push(pick('Local o empate (1X)', 62+(H+D-65)*.65, `Cobertura estadística ${Math.round(H+D)}% entre local y empate.`, 'dc')); 
+166	  if(A+D>=65) candidates.push(pick('Visitante o empate (X2)', 62+(A+D-65)*.65, `Cobertura estadística ${Math.round(A+D)}% entre visitante y empate.`, 'dc')); 
+167	  if(H>=47 && H>=A+8) candidates.push(pick('Ganador local', 58+(H-47)*.72, `Probabilidad local ${Math.round(H)}%, superior a la visitante.`, 'winner')); 
+168	  if(A>=47 && A>=H+8) candidates.push(pick('Ganador visitante', 58+(A-47)*.72, `Probabilidad visitante ${Math.round(A)}%, superior a la local.`, 'winner')); 
+169	  if(D>=34 && Math.abs(H-A)<=12) candidates.push(pick('Empate',56+(D-34)*.7,`Partido equilibrado: empate ${Math.round(D)}%.`,'winner')); 
+170	 
+171	  let over15=0; 
+172	  if(underOver.includes('over')) over15+=16; 
+173	  if(exp>=2.1) over15+=10+(exp-2.1)*8; 
+174	  const h5=last5Totals(p.teams?.home||{}), a5=last5Totals(p.teams?.away||{}); 
+175	  if(h5.total>=2.2) over15+=5; 
+176	  if(a5.total>=2.2) over15+=5; 
+177	  if(over15>=14) candidates.push(pick('Más de 1.5 goles',62+over15,`Proyección total aproximada ${exp.toFixed(1)} goles y tendencia ofensiva reciente.`, 'goals')); 
+178	 
+179	  if(underOver.includes('over 2.5') || exp>=2.75){ 
+180	    const sc=underOver.includes('over 2.5')?78:68+(exp-2.75)*10; 
+181	    candidates.push(pick('Más de 2.5 goles',sc,`Modelo de goles ${exp.toFixed(1)}; la señal principal es de partido abierto.`, 'goals')); 
+182	  } 
+183	  if(underOver.includes('under 2.5')){ 
+184	    candidates.push(pick('Menos de 2.5 goles',78,`El modelo principal de total de goles apunta a Under 2.5.`, 'goals')); 
+185	  } else if(exp<=2.35 && exp>0){ 
+186	    candidates.push(pick('Menos de 3.5 goles',73+(2.35-exp)*7,`Proyección total contenida (${exp.toFixed(1)}).`, 'goals')); 
+187	  } else if(exp<=3.15 && exp>0){ 
+188	    candidates.push(pick('Menos de 4.5 goles',72,`La proyección central (${exp.toFixed(1)}) deja margen bajo 4.5.`, 'goals')); 
+189	  } 
+190	 
+191	  const homeAttack=nval(p.teams?.home?.last_5?.goals?.for?.average?.total,0); 
+192	  const awayAttack=nval(p.teams?.away?.last_5?.goals?.for?.average?.total,0); 
+193	  const homeCon=nval(p.teams?.home?.last_5?.goals?.against?.average?.total,0); 
+194	  const awayCon=nval(p.teams?.away?.last_5?.goals?.against?.average?.total,0); 
+195	  if(goalHome>=1 && goalAway>=1 && homeAttack>=1 && awayAttack>=1){ 
+196	    candidates.push(pick('Ambos marcan — Sí',68+(Math.min(goalHome,goalAway)-1)*8,`Ambos equipos proyectan al menos 1 gol y mantienen producción ofensiva reciente.`, 'btts')); 
+197	  } 
+198	  if((goalHome<=0.8 || goalAway<=0.8) && (homeAttack<1 || awayAttack<1)){ 
+199	    candidates.push(pick('Ambos marcan — No',69,`Uno de los ataques tiene proyección inferior a 1 gol y tendencia de anotación baja.`, 'btts')); 
+200	  } 
+201	 
+202	  // Fallbacks only when needed, still chosen from strongest statistical signal. 
+203	  if(candidates.length<3){ 
+204	    if(fav===H) candidates.push(pick('Local o empate (1X)',60+Math.max(0,H+D-60)*.5,`La distribución 1X suma ${Math.round(H+D)}%.`,'dc')); 
+205	    else candidates.push(pick('Visitante o empate (X2)',60+Math.max(0,A+D-60)*.5,`La distribución X2 suma ${Math.round(A+D)}%.`,'dc')); 
+206	  } 
+207	  if(candidates.length<3) candidates.push(pick('Menos de 4.5 goles',68,`Mercado amplio de total de goles para un escenario central de ${exp.toFixed(1)}.`,'goals')); 
+208	  if(candidates.length<3) candidates.push(pick(fav===H?'Ganador local':'Ganador visitante',58,`Es el lado con mayor probabilidad en el modelo.`,'winner')); 
+209	 
+210	  // Dedupe exact labels and remove direct contradictions. 
+211	  const sorted=candidates.sort((a,b)=>b.score-a.score); 
+212	  const chosen=[]; 
+213	  for(const c of sorted){ 
+214	    if(chosen.some(x=>x.label===c.label)) continue; 
+215	    const contra = chosen.some(x => 
+216	      (x.label==='Ganador local'&&c.label==='Ganador visitante') || 
+217	      (x.label==='Ganador visitante'&&c.label==='Ganador local') || 
+218	      (x.label.includes('Más de 2.5')&&c.label.includes('Menos de 2.5')) || 
+219	      (x.label.includes('Menos de 2.5')&&c.label.includes('Más de 2.5')) || 
+220	      (x.label==='Ambos marcan — Sí'&&c.label==='Ambos marcan — No') || 
+221	      (x.label==='Ambos marcan — No'&&c.label==='Ambos marcan — Sí') 
+222	    ); 
+223	    if(!contra) chosen.push(c); 
+224	    if(chosen.length===3) break; 
+225	  } 
+226	  return chosen; 
+227	} 
+228	 
+229	function cacheKey(id){return 'pred_'+id} 
+230	function getCached(id){ 
+231	  try{const x=JSON.parse(localStorage.getItem(cacheKey(id))); if(!x)return null; 
+232	      if(Date.now()-x.ts<18*3600*1000)return x.data;}catch(e){} 
+233	  return null; 
+234	} 
+235	function setCached(id,data){localStorage.setItem(cacheKey(id),JSON.stringify({ts:Date.now(),data}))} 
+236	function clearPredictionCache(){ 
+237	  Object.keys(localStorage).filter(k=>k.startsWith('pred_')).forEach(k=>localStorage.removeItem(k)); 
+238	  state.pred={}; refreshAll(false); 
+239	} 
+240	 
+241	async function analyzeFixture(f){ 
+242	  const id=f.fixture.id; 
+243	  const cached=getCached(id); 
+244	  let data=cached; 
+245	  if(!data){ data=await callBridge('prediction',id,key()); if(!apiError(data))setCached(id,data); } 
+246	  if(apiError(data)||!data.response?.length){ 
+247	    state.pred[id]={error:apiError(data)||'Predicción no disponible'}; 
+248	  }else{ 
+249	    const p=data.response[0]; 
+250	    state.pred[id]={raw:p,picks:derivePicks(p)}; 
+251	  } 
+252	  render(); 
+253	} 
+254	 
+255	async function analyzeQueue(fixtures){ 
+256	  const todo=fixtures.filter(f=>!state.pred[f.fixture.id]); 
+257	  for(let i=0;i<todo.length;i++){ 
+258	    await analyzeFixture(todo[i]); 
+259	    await sleep(220); 
+260	  } 
+261	} 
+262	 
+263	async function refreshAll(force=false){ 
+264	  if(!key()){openSettings();return} 
+265	  if(state.loading)return; state.loading=true; 
+266	  qs('#status').textContent='Actualizando partidos de hoy y mañana…'; 
+267	  try{ 
+268	    if(force){state.fixtures={0:[],1:[]};} 
+269	    const [a,b]=await Promise.all([loadFixtures(0),loadFixtures(1)]); 
+270	    state.fixtures[0]=a;state.fixtures[1]=b;render(); 
+271	    const all=[...a,...b]; 
+272	    qs('#status').textContent=`${all.length} partidos encontrados en las competiciones seleccionadas. Analizando automáticamente…`; 
+273	    await analyzeQueue(all); 
+274	    qs('#status').textContent=`Listo: ${all.length} partidos de hoy y mañana filtrados. Toca “Ver análisis profesional” para el detalle.`; 
+275	  }catch(e){ 
+276	    qs('#status').textContent='Error: '+e.message; 
+277	  }finally{state.loading=false} 
+278	} 
+279	 
+280	function setDay(d){state.day=d;qs('#tabToday').classList.toggle('active',d===0);qs('#tabTomorrow').classList.toggle('active',d===1);render()} 
+281	function groupByLeague(fs){ 
+282	  const g={}; for(const f of fs){const k=(f.league.country||'')+' • '+f.league.name;(g[k]||(g[k]=[])).push(f)}return g 
+283	} 
+284	function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))} 
+285	function render(){ 
+286	  const fs=state.fixtures[state.day]||[], host=qs('#matches'); 
+287	  if(!fs.length){host.innerHTML=`<div class="empty">${key()?'No hay partidos disponibles de estas ligas para '+(state.day?'mañana.':'hoy.'):'Añade tu API key para comenzar.'}</div>`;return} 
+288	  let out=''; 
+289	  for(const [league,arr] of Object.entries(groupByLeague(fs))){ 
+290	    out+=`<div class="league">${escapeHtml(league)}</div>`; 
+291	    for(const f of arr){ 
+292	      const id=f.fixture.id, p=state.pred[id]; 
+293	      const t=new Date(f.fixture.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); 
+294	      out+=`<div class="match"> 
+295	        <div class="top"><div class="teams"><b>${escapeHtml(f.teams.home.name)} vs ${escapeHtml(f.teams.away.name)}</b><span>${escapeHtml(f.league.round||'')} • ${escapeHtml(f.fixture.venue?.name||'')}</span></div><div class="time">${t}</div></div> 
+296	        <div class="picks">`; 
+297	      if(!p){ 
+298	        out+=`<div class="pick loading"><span class="rank">ANALIZANDO</span><span class="sel">Cruzando forma, goles y probabilidades…</span></div>`; 
+299	      }else if(p.error){ 
+300	        out+=`<div class="pick"><span class="rank" style="color:var(--red)">SIN DATO</span><span class="sel">${escapeHtml(p.error)}</span></div>`; 
+301	      }else{ 
+302	        p.pick
