@@ -1514,14 +1514,285 @@ function groupByLeague(fs){
 }
 
 function esc(s){
-
-  return String(
-    s ?? ''
-  ).replace(
+  return String(s ?? '').replace(
     /[&<>"']/g,
     m => ({
-      '&':'&',
-      '<':'<',
-      '>':'>',
-      '"':'"',
-  
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#039;'
+    }[m])
+  );
+}
+
+function render(){
+
+  const fs = state.fixtures[state.day] || [];
+  const host = qs('#matches');
+
+  if(!fs.length){
+
+    host.innerHTML =
+      `<div class="empty">${
+        key()
+          ? 'No hay partidos disponibles de estas ligas para ' +
+            (state.day ? 'mañana.' : 'hoy.')
+          : 'Añade tu API key para comenzar.'
+      }</div>`;
+
+    return;
+  }
+
+  let out = '';
+
+  for(
+    const [league,arr]
+    of Object.entries(groupByLeague(fs))
+  ){
+
+    out +=
+      `<div class="league">${esc(league)}</div>`;
+
+    for(const f of arr){
+
+      const id = f.fixture.id;
+      const p = state.pred[id];
+
+      const t =
+        new Date(f.fixture.date)
+        .toLocaleTimeString(
+          [],
+          {
+            hour:'2-digit',
+            minute:'2-digit'
+          }
+        );
+
+      out +=
+        `<div class="match">
+          <div class="top">
+            <div class="teams">
+              <b>
+                ${esc(f.teams.home.name)}
+                vs
+                ${esc(f.teams.away.name)}
+              </b>
+              <span>
+                ${esc(f.league.round || '')}
+                •
+                ${esc(f.fixture.venue?.name || '')}
+              </span>
+            </div>
+            <div class="time">${t}</div>
+          </div>
+          <div class="picks">`;
+
+      if(!p){
+
+        out +=
+          `<div class="pick loading">
+            <span class="rank">ANALIZANDO</span>
+            <span class="sel">
+              Cruzando forma, goles y probabilidades…
+            </span>
+          </div>`;
+
+      }else if(p.error){
+
+        out +=
+          `<div class="pick">
+            <span
+              class="rank"
+              style="color:var(--red)">
+              SIN DATO
+            </span>
+            <span class="sel">
+              ${esc(p.error)}
+            </span>
+          </div>`;
+
+      }else{
+
+        p.picks.forEach((x,i) => {
+
+          out +=
+            `<div class="pick r${i+1}">
+              <span class="rank">
+                ${
+                  i === 0
+                    ? '🥇 PRINCIPAL'
+                    : i === 1
+                      ? '🥈 SECUNDARIO'
+                      : '🥉 TERCERA'
+                }
+              </span>
+              <span class="sel">
+                ${esc(x.label)}
+              </span>
+              <span class="score">
+                ${x.score}/100
+              </span>
+            </div>`;
+
+        });
+
+      }
+
+      out +=
+        `</div>
+        <button
+          class="detailBtn"
+          onclick="showDetail('${id}')">
+          Ver análisis profesional
+        </button>
+        </div>`;
+
+    }
+
+  }
+
+  host.innerHTML = out;
+  async function showDetail(id){
+
+  const fs = [
+    ...state.fixtures[0],
+    ...state.fixtures[1]
+  ];
+
+  const f =
+    fs.find(
+      x =>
+        String(x.fixture.id) ===
+        String(id)
+    );
+
+  if(!f){
+    return;
+  }
+
+  qs('#modal').style.display =
+    'flex';
+
+  qs('#detailContent').innerHTML =
+    `<h2>
+      ${esc(f.teams.home.name)}
+      vs
+      ${esc(f.teams.away.name)}
+    </h2>
+
+    <div class="section loading">
+      <p>
+        Preparando análisis…
+      </p>
+    </div>`;
+
+  let p =
+    state.pred[id]?.raw;
+
+  if(!p){
+
+    await analyzeFixture(f);
+
+    p =
+      state.pred[id]?.raw;
+
+  }
+
+  if(!p){
+
+    qs('#detailContent').innerHTML +=
+      `<div class="section">
+        <p>
+          No hay datos suficientes.
+        </p>
+      </div>`;
+
+    return;
+  }
+
+  let h2h = [];
+  let hs = null;
+  let as = null;
+
+  try{
+
+    const [h,stH,stA] =
+      await
+    function closeModal(){
+
+  qs('#modal').style.display =
+    'none';
+
+}
+
+function openSettings(){
+
+  qs('#apiKey').value =
+    key();
+
+  qs('#settings').style.display =
+    'flex';
+
+}
+
+function closeSettings(){
+
+  qs('#settings').style.display =
+    'none';
+
+}
+
+function saveSettings(){
+
+  const v =
+    qs('#apiKey')
+      .value
+      .trim();
+
+  if(!v){
+
+    alert(
+      'Pega tu API key de API-Football.'
+    );
+
+    return;
+
+  }
+
+  localStorage.setItem(
+    'api_key',
+    v
+  );
+
+  closeSettings();
+
+  refreshAll(true);
+}
+
+window.addEventListener(
+  'load',
+  () => {
+
+    render();
+
+    if(
+      key()
+    ){
+
+      refreshAll(true);
+
+    }else{
+
+      openSettings();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
+  }
