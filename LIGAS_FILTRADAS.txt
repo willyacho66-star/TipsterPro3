@@ -1,0 +1,31 @@
+Competiciones incluidas por filtro:
+- UEFA Champions League
+- UEFA Europa League
+- UEFA Conference League
+- Copa Libertadores
+- Copa Sudamericana
+- Mundial + eliminatorias
+- Eurocopa
+- FIFA Club World Cup
+- UEFA Nations League
+- España: La Liga, Segunda, Copa del Rey
+- Alemania: Bundesliga
+- Brasil: Serie A, Serie B
+- Argentina: Liga Profesional
+- Arabia Saudita: Pro League
+- Estados Unidos: MLS
+- Bélgica: Pro League
+- Bulgaria: First League
+- Chile: Primera División
+- Colombia: Primera A
+- Dinamarca: Superliga
+- Escocia: Premiership
+- Francia: Ligue 1
+- Países Bajos: Eredivisie
+- Perú: Liga 1
+- República Checa: primera liga
+- Rumania: Liga I
+- Turquía: Süper Lig
+- Inglaterra: Premier League, Championship
+- Italia: Serie A, Serie B, Coppa Italia
+- Portugal: Primeira Liga
